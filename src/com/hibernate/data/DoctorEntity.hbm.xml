@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+    <class name="com.hibernate.data.DoctorEntity" table="doctor" schema="his">
+        <id name="docid">
+            <column name="docid" sql-type="char(6)" length="6"/>
+        </id>
+        <property name="depid">
+            <column name="depid" sql-type="char(6)" length="6"/>
+        </property>
+        <property name="name">
+            <column name="name" sql-type="char(10)" length="10"/>
+        </property>
+        <property name="py">
+            <column name="py" sql-type="char(4)" length="4" not-null="true"/>
+        </property>
+        <property name="password">
+            <column name="password" sql-type="char(8)" length="8"/>
+        </property>
+        <property name="speciallist">
+            <column name="speciallist" sql-type="tinyint(1)"/>
+        </property>
+        <property name="lastLoginDatetime">
+            <column name="last_login_datetime" sql-type="timestamp" not-null="true"/>
+        </property>
+    </class>
+</hibernate-mapping>

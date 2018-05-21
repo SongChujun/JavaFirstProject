@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+        <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+        <property name="connection.url">jdbc:mysql://localhost:3306/his</property>
+        <property name="connection.driver_class">com.mysql.jdbc.Driver</property>
+        <property name="connection.username">root</property>
+        <property name="connection.password">123456</property>
+
+        <!-- 配置hibernate的基本信息 -->
+
+        <!-- 配置数据库方言dialect -->
+        <property name="show_sql">true</property>
+        <property name="format_sql">true</property>
+        <!-- 指定自动生成数据表的策略 -->
+        <property name="hbm2ddl.auto">update</property>
+        <mapping class="com.hibernate.data.DepartmentEntity"/>
+        <mapping resource="com/hibernate/data/DoctorEntity.hbm.xml"/>
+        <mapping class="com.hibernate.data.PatientEntity"/>
+        <mapping resource="com/hibernate/data/PatientEntity.hbm.xml"/>
+        <mapping class="com.hibernate.data.RegisterEntity"/>
+        <mapping resource="com/hibernate/data/RegisterEntity.hbm.xml"/>
+        <mapping class="com.hibernate.data.RegisterCategoryEntity"/>
+        <mapping resource="com/hibernate/data/RegisterCategoryEntity.hbm.xml"/>
+        <mapping class="com.hibernate.data.DoctorEntity"/>
+
+
+        <!-- DB schema will be updated if needed -->
+        <!-- <property name="hbm2ddl.auto">update</property> -->
+    </session-factory>
+</hibernate-configuration>
