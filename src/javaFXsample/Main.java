@@ -3,18 +3,25 @@ import Util.HibernateInsert;
 import com.hibernate.data.DepartmentEntity;
 import javafx.application.Application;
 import javafx.scene.control.*;
+import javafx.scene.input.InputEvent;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
+import jdk.internal.util.xml.impl.Input;
+import org.controlsfx.control.textfield.AutoCompletionBinding;
+import org.controlsfx.control.textfield.TextFields;
 import org.hibernate.HibernateException;
 import org.hibernate.Metamodel;
 import org.hibernate.query.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
-
+import javafx.scene.input.KeyCode;
 import javax.persistence.metamodel.EntityType;
 import javafx.application.Application;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Map;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -104,6 +111,9 @@ public class Main extends Application {
         pane.setVgap(5.5);
         pane.add(new Label("Account"), 0,0);
         accountField=new TextField();
+
+
+
         pane.add(accountField, 1, 0);
         PasswordField =new TextField();
         pane.add(new Label("Password"), 0, 1);
@@ -117,7 +127,8 @@ public class Main extends Application {
         DocHandlerClass handlerDoc = new DocHandlerClass();
         btnDoc.setOnAction(handlerDoc);
         PatHandlerClass handlerPat = new PatHandlerClass();
-        btnPat.setOnAction(handlerPat);
+        btnPat.setOnKeyPressed(handlerPat);
+//        btnPat.setOnAction(handlerPat);
         Scene scene = new Scene(pane);
         primaryStage.setTitle("HIS");
         primaryStage.setScene(scene);
@@ -125,8 +136,12 @@ public class Main extends Application {
     }
 
 }
-class PatHandlerClass implements EventHandler<ActionEvent>{
-    public void handle(ActionEvent e){
+class PatHandlerClass implements EventHandler<KeyEvent>{
+    public void handle(KeyEvent e){
+        if(!e.getCode().equals(KeyCode.ENTER))
+        {
+            return;
+        }
 //        String Account=Main.accountField.getText();
         String Account="000001";
         String Password=Main.PasswordField.getText();
@@ -156,6 +171,12 @@ class PatHandlerClass implements EventHandler<ActionEvent>{
         pane.setHgap(5.5);
         pane.setVgap(5.5);
         TextField depName =new TextField();
+        List list = new ArrayList();
+        list.add("xxgk 心血管科");
+        list.add("xynK 血液内科");
+        AutoCompletionBinding textAutoBingding = TextFields.bindAutoCompletion(depName, FXCollections.observableArrayList(list));
+        textAutoBingding.setVisibleRowCount(3);
+
         pane.add(new Label("科室名称"), 0,0);
         pane.add(depName, 1, 0);
         pane.add(new Label("医生姓名"), 2, 0);
@@ -287,74 +308,82 @@ class PatHandlerClass implements EventHandler<ActionEvent>{
 }
 class DocHandlerClass implements EventHandler<ActionEvent>
 {
-    private TableView<Revenue> PatTable = new TableView<Revenue>();
-
-    private ObservableList<Revenue> data =null;
-
-
-//            FXCollections.observableArrayList(
-//                    new Person("Jacob", "Smith", "jacob.smith@example.com"),
-//                    new Person("Isabella", "Johnson", "isabella.johnson@example.com"),
-//                    new Person("Ethan", "Williams", "ethan.williams@example.com"),
-//                    new Person("Emma", "Jones", "emma.jones@example.com"),
-//                    new Person("Michael", "Brown", "michael.brown@example.com")
-//            );
-
+    private TableView<Revenue> RevTable = new TableView<Revenue>();
+    private ObservableList<Revenue> RevData =FXCollections.observableArrayList();
+    private TableView<Patient> PatTable = new TableView<Patient>();
+    private ObservableList<Patient> PatData =FXCollections.observableArrayList();
     public void handle(ActionEvent e)
     {
-
         VBox vbox = new VBox(5);
         Button btn = new Button("1");
         Button btn2 = new Button("2");
-
         final Pane cardsPane = new StackPane();
         // final Group card1 = new Group(new Text(25, 25, "Card 1"));
         final Group card2 = new Group(new Text(25, 25, "Card 2"));
-        PatTable.setEditable(true);
+
+        RevTable.setEditable(true);
         TableColumn depNameCol = new TableColumn("科室名称");
-        depNameCol.setMinWidth(100);
+        depNameCol.setMinWidth(25);
         depNameCol.setCellValueFactory(new PropertyValueFactory<Revenue, String>("depName"));
 
         TableColumn docIdCol = new TableColumn("医生编号");
-        depNameCol.setMinWidth(100);
-        depNameCol.setCellValueFactory(new PropertyValueFactory<Revenue, String>("docId"));
+        docIdCol.setMinWidth(25);
+        docIdCol.setCellValueFactory(new PropertyValueFactory<Revenue, String>("docId"));
 
         TableColumn docNameCol = new TableColumn("医生名称");
-        depNameCol.setMinWidth(100);
-        depNameCol.setCellValueFactory(new PropertyValueFactory<Revenue, String>("docName"));
+        docNameCol.setMinWidth(25);
+        docNameCol.setCellValueFactory(new PropertyValueFactory<Revenue, String>("docName"));
 
         TableColumn specialistCol = new TableColumn("号种类别");
-        depNameCol.setMinWidth(100);
-        depNameCol.setCellValueFactory(new PropertyValueFactory<Revenue, String>("specialist"));
+        specialistCol.setMinWidth(25);
+        specialistCol.setCellValueFactory(new PropertyValueFactory<Revenue, String>("specialist"));
 
         TableColumn countCol = new TableColumn("挂号人次");
-        depNameCol.setMinWidth(100);
-        depNameCol.setCellValueFactory(new PropertyValueFactory<Revenue, String>("count"));
+        countCol.setMinWidth(25);
+        countCol.setCellValueFactory(new PropertyValueFactory<Revenue, String>("count"));
 
         TableColumn proceedsCol = new TableColumn("收入名称");
-        depNameCol.setMinWidth(100);
-        depNameCol.setCellValueFactory(new PropertyValueFactory<Revenue, String>("proceeds"));
-        PatTable.getColumns().addAll(depNameCol,docIdCol,docNameCol,specialistCol,countCol,proceedsCol);
+        proceedsCol.setMinWidth(25);
+        proceedsCol.setCellValueFactory(new PropertyValueFactory<Revenue, String>("proceeds"));
+
+        TableColumn PatRegIdCol = new TableColumn("挂号编号");
+        PatRegIdCol.setMinWidth(25);
+        PatRegIdCol.setCellValueFactory(new PropertyValueFactory<Patient, String>("PatRegId"));
+
+        TableColumn  PatNameCol = new TableColumn("病人名称");
+        PatNameCol.setMinWidth(25);
+        PatNameCol.setCellValueFactory(new PropertyValueFactory<Patient, String>("PatName"));
+
+        TableColumn PatTimeCol = new TableColumn("挂号日期时间");
+        PatTimeCol.setMinWidth(25);
+        PatTimeCol.setCellValueFactory(new PropertyValueFactory<Patient, String>("PatTime"));
+
+        TableColumn PatSpecialistCol = new TableColumn("号种类别");
+        PatSpecialistCol.setMinWidth(25);
+        PatSpecialistCol.setCellValueFactory(new PropertyValueFactory<Patient, String>("Patspecialist"));
+        RevData=FXCollections.observableArrayList();
+
         btn.setOnAction(new EventHandler<ActionEvent>()
         {
             public void handle(ActionEvent t)
             {
                 Session session = Main.ourSessionFactory.openSession();
                 String hql="select  r.catid,p.name,r.regDatetime,c.speciallist FROM RegisterEntity as r,PatientEntity as p,RegisterCategoryEntity as c" +
-                " where r.pid=p.pid and  r.catid =c.catid and r.docid='000001'";
+                        " where r.pid=p.pid and  r.catid =c.catid and r.docid='000001'";
                 Query query = session.createQuery(hql);
                 List results=query.list();
-                data=FXCollections.observableArrayList();
+                PatData.clear();
                 for(int i=0;i<results.size();i++)
                 {
-                    data.add(new Revenue((String)((Object[])results.get(i))[0], (String)((Object[])results.get(i))[1],(String)((Object[])results.get(i))[2],(Byte)((Object[])results.get(i))[3],(int)((Object[])results.get(i))[4],(BigDecimal)((Object[])results.get(i))[5]));
+                    PatData.add(new Patient((String)((Object[])results.get(i))[0], (String)((Object[])results.get(i))[1],(Timestamp)((Object[])results.get(i))[2],(Byte)((Object[])results.get(i))[3]));
                 }
+                PatTable.getColumns().clear();;
+                PatTable.getColumns().addAll(PatRegIdCol,PatNameCol,PatTimeCol,PatSpecialistCol);
+                PatTable.setItems(PatData);
                 cardsPane.getChildren().clear();
-                PatTable.setItems(data);
                 cardsPane.getChildren().add(PatTable);
             }
         });
-
         btn2.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent t) {
                 Session session = Main.ourSessionFactory.openSession();
@@ -364,21 +393,22 @@ class DocHandlerClass implements EventHandler<ActionEvent>
                         "group by r.docid";
                 Query query = session.createQuery(hql);
                 List results=query.list();
-                data=FXCollections.observableArrayList();
+                RevData.clear();
                 for(int i=0;i<results.size();i++)
                 {
-                    data.add(new Revenue((String)((Object[])results.get(i))[0], (String)((Object[])results.get(i))[1],(String)((Object[])results.get(i))[2],(Byte)((Object[])results.get(i))[3],(long)((Object[])results.get(i))[4],(BigDecimal)((Object[])results.get(i))[5]));
+                    RevData.add(new Revenue((String)((Object[])results.get(i))[0], (String)((Object[])results.get(i))[1],(String)((Object[])results.get(i))[2],(Byte)((Object[])results.get(i))[3],(long)((Object[])results.get(i))[4],(BigDecimal)((Object[])results.get(i))[5]));
                 }
+                RevTable.getColumns().clear();;
+                RevTable.getColumns().addAll(depNameCol,docIdCol,docNameCol,specialistCol,countCol,proceedsCol);
+                RevTable.setItems(RevData);
                 cardsPane.getChildren().clear();
-                PatTable.setItems(data);
-                cardsPane.getChildren().add(PatTable);
-                vbox.getChildren().addAll(btn, btn2, cardsPane);
-                Main.getStage().setScene(new Scene(vbox));
-                Main.getStage().setWidth(450);
-                Main.getStage().setHeight(500);
-                Main.getStage().show();
+                cardsPane.getChildren().add(RevTable);
             }
         });
-        
+        vbox.getChildren().addAll(btn, btn2, cardsPane);
+        Main.getStage().setScene(new Scene(vbox));
+        Main.getStage().setWidth(450);
+        Main.getStage().setHeight(500);
+        Main.getStage().show();
     }
 }
