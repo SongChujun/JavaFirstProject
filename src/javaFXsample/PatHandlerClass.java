@@ -1,6 +1,8 @@
 package javaFXsample;
 import Util.HibernateInsert;
+import com.hibernate.data.PatientEntity;
 import javaFXsample.Main;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -21,6 +23,8 @@ import org.hibernate.Session;
 import org.hibernate.query.Query;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,10 +46,11 @@ class PatHandlerClass implements EventHandler<KeyEvent> {
             return;
         }
         Session session = Main.ourSessionFactory.openSession();
-        String hql = "SELECT password,balance FROM PatientEntity  WHERE id=:patientId";
+        String hql = "SELECT password,balance,name FROM PatientEntity  WHERE id=:patientId";
         Query query = session.createQuery(hql);
         query.setParameter("patientId", Account);
         List results = query.list();
+        String patName=(String) ((Object[])results.get(0))[2];
 
         if(results.isEmpty())
         {
@@ -118,8 +123,23 @@ class PatHandlerClass implements EventHandler<KeyEvent> {
 
            }
        });
+        btnBak.setOnAction(ex->Platform.exit());
+        btnClr.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent t) {
+                docName.clear();
+                depName.clear();
+                regType.clear();
+                regName.clear();
+                price.clear();
+                payPrice.clear();
+                change.clear();
+                regid.clear();
+            }
+        });
         btnOk.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent t) {
+                boolean isDebugOn=true;
                 String depNameStr = depName.getText();
                 depNameStr=depNameStr.split("[ ]")[1];
                 String docNameStr = docName.getText();
@@ -133,55 +153,65 @@ class PatHandlerClass implements EventHandler<KeyEvent> {
                 String priceStr = price.getText();
                 String payPriceStr = payPrice.getText();
                 String changeStr = change.getText();
-                String regIdStr = regid.getText();
                 Alert alert;
-                if (depNameStr.isEmpty()) {
-                    alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle("信息提示对话框");
-                    alert.setHeaderText(null);
-                    alert.setContentText("科室名称不能为空");
-                    alert.showAndWait();
-                    return;
-                }
-                if (docNameStr.isEmpty()) {
-                    alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle("信息提示对话框");
-                    alert.setHeaderText(null);
-                    alert.setContentText("医生姓名不能为空");
-                    alert.showAndWait();
-                    return;
-                }
-                if (regTypestr.isEmpty()) {
-                    alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle("信息提示对话框");
-                    alert.setHeaderText(null);
-                    alert.setContentText("挂号类别不能为空");
-                    alert.showAndWait();
-                    return;
-                }
-                if (regNameStr.isEmpty()) {
-                    alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle("信息提示对话框");
-                    alert.setHeaderText(null);
-                    alert.setContentText("挂号名称不能为空");
-                    alert.showAndWait();
-                    return;
-                }
-                if (payPriceStr.isEmpty()) {
-                    alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle("信息提示对话框");
-                    alert.setHeaderText(null);
-                    alert.setContentText("交款金额不能为空");
-                    alert.showAndWait();
-                    return;
+                if(!isDebugOn)
+                {
+                    if (depNameStr.isEmpty()) {
+                        alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("信息提示对话框");
+                        alert.setHeaderText(null);
+                        alert.setContentText("科室名称不能为空");
+                        alert.showAndWait();
+                        return;
+                    }
+                    if (docNameStr.isEmpty()) {
+                        alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("信息提示对话框");
+                        alert.setHeaderText(null);
+                        alert.setContentText("医生姓名不能为空");
+                        alert.showAndWait();
+                        return;
+                    }
+                    if (regTypestr.isEmpty()) {
+                        alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("信息提示对话框");
+                        alert.setHeaderText(null);
+                        alert.setContentText("挂号类别不能为空");
+                        alert.showAndWait();
+                        return;
+                    }
+                    if (regNameStr.isEmpty()) {
+                        alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("信息提示对话框");
+                        alert.setHeaderText(null);
+                        alert.setContentText("挂号名称不能为空");
+                        alert.showAndWait();
+                        return;
+                    }
+//                if (payPriceStr.isEmpty()) {
+//                    alert = new Alert(Alert.AlertType.INFORMATION);
+//                    alert.setTitle("信息提示对话框");
+//                    alert.setHeaderText(null);
+//                    alert.setContentText("交款金额不能为空");
+//                    alert.showAndWait();
+//                    return;
+//                }
                 }
                 //查询科室相关信息
                 Session newSession = Main.ourSessionFactory.openSession();
                 String hql = "SELECT depid FROM DepartmentEntity  WHERE name = :depNameSql";
                 Query query = newSession.createQuery(hql);
-                query.setParameter("depNameSql",depName);
+                query.setParameter("depNameSql",depNameStr);
                 List results = query.list();
-                String depdepid= (String) (((Object[]) results.get(0))[0]);
+                if(results.isEmpty())
+                {
+                    alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.titleProperty().set("信息");
+                    alert.headerTextProperty().set("相关科室不存在");
+                    alert.showAndWait();
+                    return;
+                }
+                String depdepid= (String)(results.get(0));
 
 
                 //查询医生相关信息
@@ -189,6 +219,14 @@ class PatHandlerClass implements EventHandler<KeyEvent> {
                 query = newSession.createQuery(hql);
                 query.setParameter("docNameSql",docNameStr);
                 results = query.list();//医生相关信息
+                if(results.isEmpty()||results.size()>2)
+                {
+                    alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.titleProperty().set("信息");
+                    alert.headerTextProperty().set("相关科室不存在");
+                    alert.showAndWait();
+                    return;
+                }
                 String Docdepid= (String) (((Object[]) results.get(0))[0]);
                 String Docdocid= (String)(((Object[]) results.get(0))[1]);
 
@@ -218,9 +256,17 @@ class PatHandlerClass implements EventHandler<KeyEvent> {
                 query = newSession.createQuery(hql);
                 query.setParameter("regNameSQL", regNameStr);
                 results = query.list();
+                if(results.size()!=1)
+                {
+                    alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.titleProperty().set("信息");
+                    alert.headerTextProperty().set("相关科室不存在");
+                    alert.showAndWait();
+                    return;
+                }
                 String Regdepid= (String) (((Object[]) results.get(0))[0]);
                 String Regcatid= (String)(((Object[]) results.get(0))[1]);
-                boolean Regspecialist= (((Byte)(((Object[]) results.get(0))[2])).byteValue()==1);
+                boolean Regspecialist= (((Byte)(((Object[]) results.get(0))[2])).intValue()==1);
                 int RegmaxRegNumber = (int) ((Object[]) results.get(0))[3];
                 BigDecimal RegregFee = (BigDecimal) ((Object[]) results.get(0))[4];
 
@@ -233,7 +279,8 @@ class PatHandlerClass implements EventHandler<KeyEvent> {
                     alert.showAndWait();
                     return;
                 }
-                if((Regspecialist==Docspecialist)&&(regSpecialist==Docspecialist))
+                //some bug to be fixed
+                if(!(Regspecialist==Docspecialist)&&(regSpecialist==Docspecialist))
                 {
                     alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle("信息提示对话框");
@@ -242,15 +289,21 @@ class PatHandlerClass implements EventHandler<KeyEvent> {
                     alert.showAndWait();
                     return;
                 }
-                if(patBalance.compareTo(RegregFee)>0)
+                if(patBalance.compareTo(RegregFee)>=0)
                 {
                     BigDecimal newBalance =patBalance.subtract(RegregFee);
-                    hql = "UPDATE PatientEntity set balance = :balance "  +
-                            "WHERE pid=:id";
-                    query = newSession.createQuery(hql);
-                    query.setParameter("balance", newBalance);
-                    query.setParameter("id", Account);
-                    query.executeUpdate();
+                    Session session=Main.ourSessionFactory.openSession();
+                    session.beginTransaction();
+                    PatientEntity patEntity=new PatientEntity();
+                    patEntity.setPid(Account);
+                    patEntity.setBalance(newBalance);
+                    patEntity.setName(patName);
+                    LocalDateTime now = LocalDateTime.now();
+                    Timestamp timestamp = Timestamp.valueOf(now);
+                    patEntity.setLastLoginDatetime(timestamp);
+                    patEntity.setPassword(Password);
+                    session.update(patEntity);
+                    session.getTransaction().commit();
                     payPrice.setText("0");
                     change.setText("0");
                 }
@@ -258,6 +311,15 @@ class PatHandlerClass implements EventHandler<KeyEvent> {
                 {
                     BigDecimal newBalance =RegregFee.subtract(patBalance);
                     payPrice.setText(newBalance.toString());
+                    if (priceStr.isEmpty())
+                    {
+                        alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("信息提示对话框");
+                        alert.setHeaderText(null);
+                        alert.setContentText("交款金额不能为空");
+                        alert.showAndWait();
+                        return;
+                    }
                     if(Double.parseDouble(priceStr)<newBalance.doubleValue())
                     {
                         alert = new Alert(Alert.AlertType.INFORMATION);
@@ -269,22 +331,32 @@ class PatHandlerClass implements EventHandler<KeyEvent> {
                     }
                     else
                     {
+
                         change.setText(String.valueOf((Double.parseDouble(priceStr)-newBalance.doubleValue())));
-                        hql = "UPDATE PatientEntity set balance = :balance "  +
-                                "WHERE pid=:id";
-                        query = newSession.createQuery(hql);
-                        query.setParameter("balance", new BigDecimal(0));
-                        query.setParameter("id", Account);
-                        query.executeUpdate();
+
+                        Session session=Main.ourSessionFactory.openSession();
+                        session.beginTransaction();
+                        PatientEntity patEntity=new PatientEntity();
+                        patEntity.setPid(Account);
+                        patEntity.setBalance(new BigDecimal(0));
+                        patEntity.setName(patName);
+                        LocalDateTime now = LocalDateTime.now();
+                        Timestamp timestamp = Timestamp.valueOf(now);
+                        patEntity.setLastLoginDatetime(timestamp);
+                        patEntity.setPassword(Password);
+                        session.update(patEntity);
+                        session.getTransaction().commit();
+                        change.setText(String.valueOf(Double.parseDouble(priceStr)-newBalance.doubleValue()));
                     }
 
                 }
-                regid.setText(Regcatid);
+
                 String [] insertArgs=new String[3];
                 insertArgs[0]=new String(Regcatid);
                 insertArgs[1]=new String(Regdepid);
                 insertArgs[2]=new String(Account);
                 String ID=HibernateInsert.RegInsert(insertArgs,RegregFee);
+                regid.setText(ID);
             }
         });
 
