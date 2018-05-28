@@ -19,9 +19,14 @@
       <root url="jar:///usr/share/java/openjfx/lib/packager.jar!/" />
       <root url="jar:///usr/share/java/openjfx/jre/lib/jfxswt.jar!/" />
       <root url="jar:///usr/share/java/openjfx/jre/lib/ext/jfxrt.jar!/" />
+      <root url="jar:///usr/share/java/fxsampler-1.0.10.jar!/" />
+      <root url="jar:///usr/share/java/controlsfx-8.40.14.jar!/" />
+      <root url="jar:///usr/share/java/controlsfx-samples-8.40.14.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="jar:///usr/share/java/controlsfx-samples-8.40.14.jar!/" />
+    </SOURCES>
     <jarDirectory url="file:///usr/share/java/openjfx" recursive="false" />
   </library>
 </component>

@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+    <class name="com.hibernate.data.RegisterEntity" table="register" schema="his">
+        <id name="regId">
+            <column name="reg_id" sql-type="char(6)" length="6"/>
+        </id>
+        <property name="catid">
+            <column name="catid" sql-type="char(6)"/>
+        </property>
+        <property name="docid">
+            <column name="docid" sql-type="char(6)"/>
+        </property>
+        <property name="pid">
+            <column name="pid" sql-type="char(6)"/>
+        </property>
+        <property name="currentRegCount">
+            <column name="current_reg_count" sql-type="int(11)"/>
+        </property>
+        <property name="unreg">
+            <column name="unreg" sql-type="tinyint(1)"/>
+        </property>
+        <property name="regFee">
+            <column name="reg_fee" sql-type="decimal(8,2)" precision="8" scale="2"/>
+        </property>
+        <property name="regDatetime">
+            <column name="reg_datetime" sql-type="timestamp"/>
+        </property>
+    </class>
+</hibernate-mapping>

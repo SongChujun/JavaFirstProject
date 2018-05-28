@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+    <class name="com.hibernate.data.RegisterCategoryEntity" table="register_category" schema="his">
+        <id name="catid">
+            <column name="catid" sql-type="char(6)" length="6"/>
+        </id>
+        <property name="name">
+            <column name="name" sql-type="char(12)" length="12"/>
+        </property>
+        <property name="py">
+            <column name="py" sql-type="char(4)" length="4"/>
+        </property>
+        <property name="depid">
+            <column name="depid" sql-type="char(6)" length="6"/>
+        </property>
+        <property name="speciallist">
+            <column name="speciallist" sql-type="tinyint(1)"/>
+        </property>
+        <property name="maxRegNumber">
+            <column name="max_reg_number" sql-type="int(11)"/>
+        </property>
+        <property name="regFee">
+            <column name="reg_fee" sql-type="decimal(10,2)" precision="10" scale="2"/>
+        </property>
+    </class>
+</hibernate-mapping>
